@@ -17,13 +17,15 @@ function updateChart(apps) {
   const ctx = document.getElementById('chart').getContext('2d');
   
   const labels = apps.map(app => app.app_id);
-  const datasets = apps.map(app => ({
-    label: app.app_name,
-    data: [app.policy_id],
-    backgroundColor: 'rgba(75, 192, 192, 0.5)',
-    borderColor: 'rgb(75, 192, 192)',
-    borderWidth: 1
-  }));
+  const datasets = [
+    {
+      label: 'Policy ID',
+      data: apps.map(app => app.policy_id),
+      backgroundColor: 'rgba(75, 192, 192, 0.5)',
+      borderColor: 'rgb(75, 192, 192)',
+      borderWidth: 1
+    }
+  ];
   
   if (chart) {
     chart.destroy();
@@ -46,7 +48,6 @@ function updateChart(apps) {
             }
           },
           y: {
-            stacked: true,
             title: {
               display: true,
               text: 'Policy ID'
@@ -61,26 +62,40 @@ function updateChart(apps) {
 function fillAppForm(app) {
     // Здесь мы заполняем форму данными приложения.
     $('#appIdInput').val(app.app_id);
-    $('#nameInput').val(app.name);
-    $('#descriptionInput').val(app.description);
-    $('#dateInput').val(app.date);
+    $('#nameInput').val(app.app_name);
+    $('#policyIdInput').val(app.policy_id);
+    $('#agentConfigInput').val(app.agent_js_config);
+    $('#correlationsConfigInput').val(app.correlations_config);
 }
 
 function clearAppForm() {
     // Здесь мы очищаем форму
     $('#appIdInput').val('');
     $('#nameInput').val('');
-    $('#descriptionInput').val('');
-    $('#dateInput').val('');
+    $('#policyIdInput').val('');
+    $('#agentConfigInput').val('');
+    $('#correlationsConfigInput').val('');
     $('.error-message').text('');
 }
 
 async function loadApps() {
-    // Здесь мы загружаем список приложений с сервера
-    let response = await axios.post('http://checkstatus.website:8099/Face/App_List');
-    let data = response.data;
+    let response = await fetch('http://checkstatus.website:8099/Face/App_List', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: "'" + "'"
+    });
+    let data = await response.json();
 
-    apps = data;
+    apps = data.app_table_ids.map((id, index) => ({
+        app_id: id,
+        app_name: data.names[index],
+        policy_id: data.policy_ids[index],
+        agent_js_config: data.agent_js_configs[index],
+        correlations_config: data.correlations_configs[index]
+    }));
+    
     fillAppTable(apps);
     updateChart(apps);
 }
@@ -88,30 +103,17 @@ async function loadApps() {
 async function saveApp(app, isNewApp) {
     let url = isNewApp ? 'http://checkstatus.website:8099/Face/New_app' : 'http://checkstatus.website:8099/Face/Update_app';
     let method = 'POST';
-    let response = await axios({
+    let response = await fetch(url, {
         method: method,
-        url: url,
         headers: {
             'Content-Type': 'application/json'
         },
-        data: "'" + JSON.stringify(app) + "'"
+        body: "'" + JSON.stringify(app) + "'"
     });
 
-    let data = response.data;
+    let data = await response.json();
     return data.error;
 }
-
-function getAppDataFromForm() {
-    return {
-        app_id: $('#appIdInput').val(),
-        app_name: $('#nameInput').val(),
-        policy_id: $('#policyIdInput').val(),
-        agent_js_config: $('#agentJsConfigInput').val(),
-        correlations_config: $('#correlationsConfigInput').val()
-    };
-}
-
-
 
 
 function fillAppTable(apps) {
@@ -146,8 +148,6 @@ function fillAppTable(apps) {
     });
 }
 
-
-
 $(document).ready(() => {
     // Здесь мы добавляем обработчики событий для кнопок
 
@@ -161,7 +161,7 @@ $(document).ready(() => {
         let app = getAppDataFromForm();
         let isNewApp = editingAppIndex === null;
         let error = await saveApp(app, isNewApp);
-        if (error == '0') {
+        if (error === 0) {
             $('#appModal').modal('hide');
             if (editingAppIndex !== null) {
                 apps[editingAppIndex] = app;
