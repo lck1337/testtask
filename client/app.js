@@ -6,7 +6,7 @@ function getAppDataFromForm() {
         app_id: $('#appIdInput').val(),
         app_name: $('#nameInput').val(),
         policy_id: parseInt($('#policyIdInput').val()),
-        agent_js_config: $('#agentConfigInput').val(),
+        agent_js_config: $('#agentJsConfigInput').val(),
         correlations_config: $('#correlationsConfigInput').val(),
     };
 }
@@ -135,11 +135,7 @@ async function saveApp(app, isNewApp) {
     let url = isNewApp ? 'http://checkstatus.website:8099/Face/New_app' : 'http://checkstatus.website:8099/Face/Update_app';
     let method = 'POST';
 
-    if (!isNewApp) {
-        // Добавляем поле agent_js_config в обновляемое приложение
-        const existingApp = apps[editingAppIndex];
-        app.agent_js_config = existingApp.agent_js_config;
-    }
+    console.log(app);
 
     let response = await fetch(url, {
         method: method,
@@ -199,7 +195,7 @@ $(document).ready(() => {
         let app = getAppDataFromForm();
         let isNewApp = editingAppIndex === null;
         let error = await saveApp(app, isNewApp);
-        if (error === 0) {
+        if (error == 0) {
             $('#appModal').modal('hide');
             if (editingAppIndex !== null) {
                 apps[editingAppIndex] = app;
