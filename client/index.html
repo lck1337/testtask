@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Task</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@0.1.1"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js" integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#appModal" id="addAppBtn">Добавить приложение</button>
+    <table class="table" id="appTable">
+        <thead>
+            <tr>
+                <th scope="col">App ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Policy ID</th>
+                <th scope="col">Agent JS Config</th>
+                <th scope="col">Correlations Config</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        
+        <tbody id="appTableBody">
+        </tbody>
+    </table>
+    
+
+    <div class="modal fade" id="appModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form id="appForm">
+                        <div class="mb-3">
+                            <label for="appIdInput" class="form-label">App ID</label>
+                            <input type="text" class="form-control" id="appIdInput" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nameInput" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="nameInput">
+                        </div>
+                        <div class="mb-3">
+                            <label for="policyIdInput" class="form-label">Policy ID</label>
+                            <input type="text" class="form-control" id="policyIdInput">
+                        </div>
+                        <div class="mb-3">
+                            <label for="agentJsConfigInput" class="form-label">Agent JS Config</label>
+                            <input type="text" class="form-control" id="agentJsConfigInput">
+                        </div>
+                        <div class="mb-3">
+                            <label for="correlationsConfigInput" class="form-label">Correlations Config</label>
+                            <input type="text" class="form-control" id="correlationsConfigInput">
+                        </div>                         
+                    </form>
+                    <div class="error-message text-danger"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="saveAppBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <canvas id="chart"></canvas>
+
+    <script src="app.js"></script>
+</body>
+</html>
