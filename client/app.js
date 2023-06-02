@@ -15,8 +15,8 @@ let chart = null;
 
 function updateChart(apps) {
     const ctx = document.getElementById('chart').getContext('2d');
-    
-    const labels = apps.map(app => 1);
+  
+    const labels = getMinutesRange();
     const datasets = [
       {
         label: 'Policy ID 1',
@@ -40,11 +40,11 @@ function updateChart(apps) {
         borderWidth: 1
       }
     ];
-    
+  
     if (chart) {
       chart.destroy();
     }
-    
+  
     chart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -56,14 +56,38 @@ function updateChart(apps) {
         scales: {
           x: {
             stacked: true,
+            title: {
+              display: true,
+              text: 'Minutes'
+            }
           },
           y: {
-            stacked: true
+            stacked: true,
+            title: {
+              display: true,
+              text: 'Policy ID'
+            }
           }
         }
       }
     });
   }
+  
+  function getMinutesRange() {
+    const minutes = [];
+    for (let i = 0; i < 60; i++) {
+      const hour = Math.floor(i / 60);
+      const minute = i % 60;
+      const time = `${padZero(hour)}:${padZero(minute)}`;
+      minutes.push(time);
+    }
+    return minutes;
+  }
+  
+  function padZero(number) {
+    return number.toString().padStart(2, '0');
+  }
+  
 
 
 function fillAppForm(app) {
