@@ -15,50 +15,63 @@ let chart = null;
 
 function updateChart(apps) {
     const ctx = document.getElementById('chart').getContext('2d');
-
+    
     const labels = apps.map(app => app.app_id);
-    const datasets = apps.map((app, index) => {
-        const colors = ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)'];
-        return {
-            label: app.app_name,
-            data: [app.policy_id],
-            backgroundColor: colors[index % colors.length],
-            borderColor: colors[index % colors.length],
-            borderWidth: 1
-        };
-    });
-
+    const datasets = [
+      {
+        label: 'Policy ID 1',
+        data: apps.map(app => parseInt(app.policy_id)),
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        borderColor: 'rgb(75, 192, 192)',
+        borderWidth: 1
+      },
+      {
+        label: 'Policy ID 2',
+        data: apps.map(app => parseInt(app.policy_id)),
+        backgroundColor: 'rgba(192, 75, 192, 0.5)',
+        borderColor: 'rgb(192, 75, 192)',
+        borderWidth: 1
+      },
+      {
+        label: 'Policy ID 3',
+        data: apps.map(app => parseInt(app.policy_id)),
+        backgroundColor: 'rgba(192, 192, 75, 0.5)',
+        borderColor: 'rgb(192, 192, 75)',
+        borderWidth: 1
+      }
+    ];
+    
     if (chart) {
-        chart.destroy();
+      chart.destroy();
     }
-
+    
     chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: datasets
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    stacked: true,
-                    title: {
-                        display: true,
-                        text: 'App ID'
-                    }
-                },
-                y: {
-                    stacked: true,
-                    title: {
-                        display: true,
-                        text: 'Policy ID'
-                    }
-                }
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+          responsive: true,
+          indexAxis: 'x',
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'App ID'
+              }
+            },
+            y: {
+              stacked: true,
+              title: {
+                display: true,
+                text: 'Policy ID'
+              }
             }
+          }
         }
     });
-}
+  }
 
 
 function fillAppForm(app) {
