@@ -14,43 +14,47 @@ function getAppDataFromForm() {
 let chart = null;
 
 function updateChart(apps) {
-    const ctx = document.getElementById('chart').getContext('2d');
-    const labels = apps.map(app => app.app_id);
-    const data = apps.map(app => app.policy_id);
-
-    if (chart) {
-        chart.destroy();
-    }
-
-    chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Policy ID by App ID',
-                data: data,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'App ID'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Policy ID'
-                    }
-                }
+  const ctx = document.getElementById('chart').getContext('2d');
+  
+  const labels = apps.map(app => app.app_id);
+  const datasets = apps.map(app => ({
+    label: app.app_name,
+    data: [app.policy_id],
+    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+    borderColor: 'rgb(75, 192, 192)',
+    borderWidth: 1
+  }));
+  
+  if (chart) {
+    chart.destroy();
+  }
+  
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: datasets
+    },
+    options: {
+        responsive: true,
+        indexAxis: 'x',
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'App ID'
             }
+          },
+          y: {
+            stacked: true,
+            title: {
+              display: true,
+              text: 'Policy ID'
+            }
+          }
         }
-    });
+      }
+  });
 }
 
 
@@ -73,7 +77,7 @@ function clearAppForm() {
 
 async function loadApps() {
     // Здесь мы загружаем список приложений с сервера
-    let response = await axios.post('http://localhost:3000/Face/App_List');
+    let response = await axios.post('http://checkstatus.website:8099/Face/App_List');
     let data = response.data;
 
     apps = data;
@@ -82,7 +86,7 @@ async function loadApps() {
 }
 
 async function saveApp(app, isNewApp) {
-    let url = isNewApp ? 'http://localhost:3000/Face/New_app' : 'http://localhost:3000/Face/Update_app';
+    let url = isNewApp ? 'http://checkstatus.website:8099/Face/New_app' : 'http://checkstatus.website:8099/Face/Update_app';
     let method = 'POST';
     let response = await axios({
         method: method,
@@ -90,7 +94,7 @@ async function saveApp(app, isNewApp) {
         headers: {
             'Content-Type': 'application/json'
         },
-        data: JSON.stringify(app)
+        data: "'" + JSON.stringify(app) + "'"
     });
 
     let data = response.data;
