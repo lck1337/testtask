@@ -14,48 +14,50 @@ function getAppDataFromForm() {
 let chart = null;
 
 function updateChart(apps) {
-  const ctx = document.getElementById('chart').getContext('2d');
-  
-  const labels = apps.map(app => app.app_id);
-  const datasets = [
-    {
-      label: 'Policy ID',
-      data: apps.map(app => app.policy_id),
-      backgroundColor: 'rgba(75, 192, 192, 0.5)',
-      borderColor: 'rgb(75, 192, 192)',
-      borderWidth: 1
+    const ctx = document.getElementById('chart').getContext('2d');
+
+    const labels = apps.map(app => app.app_id);
+    const datasets = apps.map((app, index) => {
+        const colors = ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)'];
+        return {
+            label: app.app_name,
+            data: [app.policy_id],
+            backgroundColor: colors[index % colors.length],
+            borderColor: colors[index % colors.length],
+            borderWidth: 1
+        };
+    });
+
+    if (chart) {
+        chart.destroy();
     }
-  ];
-  
-  if (chart) {
-    chart.destroy();
-  }
-  
-  chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: datasets
-    },
-    options: {
-        responsive: true,
-        indexAxis: 'x',
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'App ID'
+
+    chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'App ID'
+                    }
+                },
+                y: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Policy ID'
+                    }
+                }
             }
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Policy ID'
-            }
-          }
         }
-      }
-  });
+    });
 }
 
 
@@ -95,7 +97,7 @@ async function loadApps() {
         agent_js_config: data.agent_js_configs[index],
         correlations_config: data.correlations_configs[index]
     }));
-    
+
     fillAppTable(apps);
     updateChart(apps);
 }
@@ -103,6 +105,13 @@ async function loadApps() {
 async function saveApp(app, isNewApp) {
     let url = isNewApp ? 'http://checkstatus.website:8099/Face/New_app' : 'http://checkstatus.website:8099/Face/Update_app';
     let method = 'POST';
+
+    if (!isNewApp) {
+        // Добавляем поле agent_js_config в обновляемое приложение
+        const existingApp = apps[editingAppIndex];
+        app.agent_js_config = existingApp.agent_js_config;
+    }
+
     let response = await fetch(url, {
         method: method,
         headers: {
