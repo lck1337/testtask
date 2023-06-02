@@ -16,7 +16,7 @@ let chart = null;
 function updateChart(apps) {
     const ctx = document.getElementById('chart').getContext('2d');
     
-    const labels = apps.map(app => app.app_id);
+    const labels = apps.map(app => 1);
     const datasets = [
       {
         label: 'Policy ID 1',
@@ -52,24 +52,16 @@ function updateChart(apps) {
         datasets: datasets
       },
       options: {
-          responsive: true,
-          indexAxis: 'x',
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'App ID'
-              }
-            },
-            y: {
-              stacked: true,
-              title: {
-                display: true,
-                text: 'Policy ID'
-              }
-            }
+        responsive: true,
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true
           }
         }
+      }
     });
   }
 
